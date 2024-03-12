@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Depression Detector</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+
+<body>
+    <div id="title">Depression Detector</div>
+    <div id="upload-box">
+        <div id="upload-container">
+            <div id="upload-audio-header">
+                <h3 id="">Upload Audio File</h1>
+            </div>
+            <div id="form-audio">
+                <form id="audio-form" action="/upload-audio" method="post" enctype="multipart/form-data">
+                    <input type="file" id="audio-file" name="audio" accept="audio/*">
+                    <button id="upload-button" type="submit">Upload</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="prediction">Prediction will be shown here after analyzing the audio!</div>
+    <div id="flexbox">
+        <div id="question-tab">
+            <div id="questions"> Questions</div>
+            <div id="questions-container">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="interestCheckbox">
+                    <label for="interestCheckbox">Over the last two weeks, how often have you had little interest or
+                        pleasure in
+                        doing things you usually enjoy?</label>
+                </div>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="depressedCheckbox">
+                    <label for="depressedCheckbox">How often have you felt down, depressed, or hopeless during the past
+                        two
+                        weeks?</label>
+                </div>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="sleepCheckbox">
+                    <label for="sleepCheckbox">Have you experienced trouble falling asleep, staying asleep, or sleeping
+                        too much
+                        over the last two
+                        weeks?</label>
+                </div>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="energyCheckbox">
+                    <label for="energyCheckbox">How often have you felt tired or had little energy during the past two
+                        weeks?</label>
+                </div>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="appetiteCheckbox">
+                    <label for="appetiteCheckbox">Have you noticed changes in your appetite or weight (loss or gain)
+                        over the
+                        last two weeks?</label>
+                </div>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="failureCheckbox">
+                    <label for="failureCheckbox">How often have you felt like a failure or let yourself or your family
+                        down in
+                        the past two weeks?</label>
+                </div>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="concentrationCheckbox">
+                    <label for="concentrationCheckbox">Have you had difficulty concentrating on things such as reading,
+                        watching
+                        TV, or working during the last
+                        two weeks?</label>
+                </div>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="movementCheckbox">
+                    <label for="movementCheckbox">How often have you moved or spoken so slowly that other people could
+                        have
+                        noticed? Or the opposite -
+                        being so fidgety or restless that you've been moving a lot more than usual?</label>
+                </div>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="suicidalCheckbox">
+                    <label for="suicidalCheckbox">Have you had thoughts that you would be better off dead or of hurting
+                        yourself
+                        in some way in the past
+                        two weeks?</label>
+                </div>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="sexCheckbox">
+                    <label for="sexCheckbox">How often have you had trouble enjoying or having interest in sex over the
+                        last two
+                        weeks?</label>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="steps">
+            <div id="steps-to-use">
+                How to use
+            </div>
+            <div id="explained-way">
+                <p>Follow these steps to use the Depression Detector:</p>
+                <ol>
+                    <li>Turn on the voice recorder.</li>
+                    <li>Answer the questions provided one by one.</li>
+                    <li>Upload the audio in .wav format.</li>
+                    <li>Wait for us to analyze the audio.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <div id="madeBy">
+        Made by&nbsp;
+        <strong style="font-weight: 700;">Kshitiz Raj</strong>&nbsp;
+        and&nbsp;
+        <strong style="font-weight: 700;">Nikhil Baheti</strong>&nbsp;
+        as a Major project under&nbsp;
+        <strong style="font-weight: 700;">Dr. Pandian A</strong>
+    </div>
+
+    <script>
+        document.getElementById('audio-form').addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const formData = new FormData();
+            formData.append('audio', document.getElementById('audio-file').files[0]);
+            // document.getElementById('prediction').innerText = "Analyzing";
+            const response = await fetch('/upload-audio', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorMessage = `Error: ${response.statusText}`;
+                document.getElementById('prediction').innerText = errorMessage;
+                console.error(errorMessage);
+                return;
+            }
+
+            try {
+                const data = await response.json();
+                if (data.error) {
+                    document.getElementById('prediction').innerText = `Error: ${data.error}`;
+                } else {
+                    document.getElementById('prediction').innerText = `Prediction: ${data.prediction}`;
+                }
+            } catch (error) {
+                const errorMessage = 'An error occurred while processing the response.';
+                document.getElementById('prediction').innerText = errorMessage;
+                console.error(errorMessage, error);
+            }
+        });
+    </script>
+
+</body>
+
+</html>
