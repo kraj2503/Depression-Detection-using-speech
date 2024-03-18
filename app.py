@@ -34,11 +34,14 @@ def predict_audio(audio_data, sample_rate):
     if features is not None:
         features = features.reshape(1, -1)
         decision_scores = rf_classifier.predict_proba(features)[:, 1]
-        prediction = 1 if decision_scores > 0.6 else 0
+        prediction = 1 if decision_scores < 0.62 else 0
         if prediction == 1:
-            decision_scores = random.uniform(60, 75)
-            return f"Depression Found, Depression rate: {decision_scores:.2f}%"
-        else: 
+            decision_score = decision_scores[0]  # Get the single float value from the NumPy array
+            # return f"Depression Found, Depression rate: {decision_score:.2f}%"
+            return "Depression Found!"
+        else:
+            decision_score = decision_scores[0]
+            # return f"Depression not found!  {decision_score:.2f}%"
             return "Depression not found!"
     else:
         return None
